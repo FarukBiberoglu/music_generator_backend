@@ -1,0 +1,1 @@
+{"version":3,"file":"allowed-tags.js","sourceRoot":"","sources":["../../../../src/music/constants/allowed-tags.ts"],"names":[],"mappings":";;;AAeA,oCAEC;AAjBY,QAAA,YAAY,GAAG;IAC1B,KAAK;IACL,KAAK;IACL,SAAS;IACT,MAAM;IACN,MAAM;IACN,MAAM;IACN,UAAU;IACV,MAAM;IACN,OAAO;IACP,WAAW;CACH,CAAC;AAIX,SAAgB,YAAY,CAAC,KAAa;IACxC,OAAO,oBAAY,CAAC,QAAQ,CAAC,KAAmB,CAAC,CAAC;AACpD,CAAC"}
