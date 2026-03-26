@@ -34,22 +34,53 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.admin = void 0;
+exports.initFirebaseAdmin = initFirebaseAdmin;
+exports.isFirebaseAdminInitialized = isFirebaseAdminInitialized;
 const admin = __importStar(require("firebase-admin"));
 exports.admin = admin;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
-const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH;
-if (!serviceAccountPath) {
-    throw new Error('Firebase service account not found');
+function readServiceAccountFromEnvOrFile() {
+    const json = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
+    if (json && json.trim()) {
+        return {
+            serviceAccount: JSON.parse(json),
+            source: 'FIREBASE_SERVICE_ACCOUNT_JSON',
+        };
+    }
+    const b64 = process.env.FIREBASE_SERVICE_ACCOUNT_BASE64;
+    if (b64 && b64.trim()) {
+        const decoded = Buffer.from(b64, 'base64').toString('utf-8');
+        return {
+            serviceAccount: JSON.parse(decoded),
+            source: 'FIREBASE_SERVICE_ACCOUNT_BASE64',
+        };
+    }
+    const envPath = process.env.FIREBASE_SERVICE_ACCOUNT_PATH ??
+        process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    if (!envPath || !envPath.trim())
+        return null;
+    const fullPath = path.resolve(envPath);
+    if (!fs.existsSync(fullPath)) {
+        throw new Error(`Firebase service account file not found: ${fullPath}`);
+    }
+    return {
+        serviceAccount: JSON.parse(fs.readFileSync(fullPath, 'utf-8')),
+        source: process.env.FIREBASE_SERVICE_ACCOUNT_PATH?.trim() ? 'FIREBASE_SERVICE_ACCOUNT_PATH' : 'GOOGLE_APPLICATION_CREDENTIALS',
+    };
 }
-const fullPath = path.resolve(serviceAccountPath);
-if (!fs.existsSync(fullPath)) {
-    throw new Error(`Firebase service account file not found: ${fullPath}`);
-}
-if (!admin.apps.length) {
-    const serviceAccount = JSON.parse(fs.readFileSync(fullPath, 'utf-8'));
+function initFirebaseAdmin() {
+    if (admin.apps.length)
+        return true;
+    const maybeAccount = readServiceAccountFromEnvOrFile();
+    if (!maybeAccount)
+        return false;
     admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount),
+        credential: admin.credential.cert(maybeAccount.serviceAccount),
     });
+    return true;
+}
+function isFirebaseAdminInitialized() {
+    return admin.apps.length > 0;
 }
 //# sourceMappingURL=firebase-admin.js.map

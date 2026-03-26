@@ -11,6 +11,9 @@ const common_1 = require("@nestjs/common");
 const firebase_admin_1 = require("../firebase-admin");
 let FirebaseAuthGuard = class FirebaseAuthGuard {
     async canActivate(context) {
+        if (!(0, firebase_admin_1.isFirebaseAdminInitialized)()) {
+            throw new common_1.UnauthorizedException('Firebase auth is not configured on this server');
+        }
         const request = context.switchToHttp().getRequest();
         const authHeader = request.headers.authorization ?? request.headers.Authorization;
         if (!authHeader || typeof authHeader !== 'string') {

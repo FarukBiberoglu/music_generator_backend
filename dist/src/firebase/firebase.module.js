@@ -8,8 +8,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FirebaseModule = void 0;
 const common_1 = require("@nestjs/common");
-require("./firebase-admin");
+const firebase_admin_1 = require("./firebase-admin");
 let FirebaseModule = class FirebaseModule {
+    onModuleInit() {
+        (0, firebase_admin_1.initFirebaseAdmin)();
+    }
 };
 exports.FirebaseModule = FirebaseModule;
 exports.FirebaseModule = FirebaseModule = __decorate([

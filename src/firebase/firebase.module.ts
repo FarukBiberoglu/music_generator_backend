@@ -1,5 +1,9 @@
-import { Module } from '@nestjs/common';
-import './firebase-admin';
+import { Module, OnModuleInit } from '@nestjs/common';
+import { initFirebaseAdmin } from './firebase-admin';
 
 @Module({})
-export class FirebaseModule {}
+export class FirebaseModule implements OnModuleInit {
+  onModuleInit() {
+    initFirebaseAdmin();
+  }
+}
