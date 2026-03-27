@@ -36,6 +36,7 @@ export interface SonautoFalResult {
 @Injectable()
 export class SonautoClient implements OnModuleInit {
   private readonly logger = new Logger(SonautoClient.name);
+  private isFalConfigured = false;
 
   constructor(private readonly config: ConfigService) {}
 
@@ -44,12 +45,22 @@ export class SonautoClient implements OnModuleInit {
       this.config.get<string>('FAL_KEY') ??
       this.config.get<string>('FAL_API_KEY');
     if (!key) {
-      throw new Error('FAL_KEY or FAL_API_KEY is required');
+      this.logger.warn(
+        'FAL_KEY/FAL_API_KEY is not set. Music generation endpoints will return an error until configured.',
+      );
+      return;
     }
     fal.config({ credentials: key });
+    this.isFalConfigured = true;
   }
 
   async generate(input: SonautoFalInput): Promise<SonautoFalResult> {
+    if (!this.isFalConfigured) {
+      throw new Error(
+        'Music generation is not configured. Set FAL_KEY or FAL_API_KEY.',
+      );
+    }
+
     let loggedCount = 0;
 
     const result = await fal.subscribe(FAL_MODEL, {
