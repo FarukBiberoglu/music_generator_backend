@@ -20,6 +20,6 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new GlobalHttpExceptionFilter());
   app.useGlobalInterceptors(new BigIntSerializeInterceptor());
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT || 8080);
 }
 void bootstrap();
