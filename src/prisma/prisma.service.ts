@@ -14,7 +14,6 @@ export class PrismaService
       throw new Error('DATABASE_URL is required');
     }
 
-    // Pass config directly to avoid pg type-version mismatches across environments.
     const adapter = new PrismaPg({ connectionString });
     super({ adapter });
   }
