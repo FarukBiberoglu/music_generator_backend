@@ -2,7 +2,6 @@ import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { Pool } from 'pg';
 
 @Injectable()
 export class PrismaService
@@ -15,8 +14,8 @@ export class PrismaService
       throw new Error('DATABASE_URL is required');
     }
 
-    const pool = new Pool({ connectionString });
-    const adapter = new PrismaPg(pool);
+    // Pass config directly to avoid pg type-version mismatches across environments.
+    const adapter = new PrismaPg({ connectionString });
     super({ adapter });
   }
 
